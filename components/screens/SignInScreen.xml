@@ -24,28 +24,28 @@
       height="50"
       width="600"
       text = "Sign in to your account"
-      translation="[120,205]"
+      translation="[120,285]"
       font = "font:LargeBoldSystemFont" />
     <TextEditBox
       id = "SigninEmail"
       height="50"
       width="600"
-      translation="[100,240]"
+      translation="[100,320]"
       clearOnDownKey="false"
       hintText = "Enter user email"/>
     <TextEditBox
       id = "SigninPassword"
       height="50"
       width="600"
-      translation="[100,295]"
+      translation="[100,375]"
       clearOnDownKey="false"
       secureMode="true"
       hintText = "Enter user password"/>
     <Button id="signInButton" text="Sign In" visible="true" showFocusFootprint="true"
             minWidth="140" height="72"
-            iconUri="" focusedIconUri="" translation="[100,360]"/>
+            iconUri="" focusedIconUri="" translation="[100,440]"/>
     <Label id="signInTips" text="Press OK to enter password, then press Down key"
-           translation="[260,380]" />
+           translation="[260,460]" />
     <StandardKeyboardDialog id="signinKeyboard"
       width="1020" height="565" visible="false" />
   </children>

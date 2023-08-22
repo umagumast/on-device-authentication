@@ -24,9 +24,9 @@ sub init()
     m.contentScreenRowList = m.top.FindNode("RowList")
 
     ' TODO: this shouldn't need to be set visible/invisible
-    m.selectHint = m.top.FindNode("selectHint")
-    m.hint = m.top.FindNode("hint")
-
+    'm.selectHint = m.top.FindNode("selectHint")
+    'm.hint = m.top.FindNode("hint")
+    m.top.backgroundUri= "pkg:/images/background.jpg"
     m.top.observeField("response", "onDataRequestResponse")
 
     ' Specify RFI type when handling userData'
@@ -444,8 +444,8 @@ function isLinkedEmail(msg as Object)
     else
         ? "email not linked to active subscription in publisher system, create and process an order ..."
         m.productSelectScreen.visible = "true"
-        m.hint.visible = "true"
-        m.selectHint.visible = "true"
+        'm.hint.visible = "true"
+        'm.selectHint.visible = "true"
         m.productGrid.setFocus(true)
     end if
 end function
@@ -553,11 +553,12 @@ function grantAccess()
     print "!-------------------access granted-------------------!"
     ' hide product screen and display the content screen'
     m.productSelectScreen.visible = false
-    m.selectHint.text = "Navigate content grid"
-    m.selectHint.visible = true
-    m.hint.visible = true
+    'm.selectHint.text = "Navigate content grid"
+    'm.selectHint.visible = true
+    'm.hint.visible = true
     m.contentScreen.visible = true
     m.contentScreenRowList.SetFocus(true)
+    
 end function
 
 function makeRequest(requestType as String, parameters as Object, callback as String)

@@ -8,7 +8,7 @@ End Function
 
 Function GetContentFeed()  'This function retrieves and parses the feed and stores the content item in a ContentNode
     url = CreateObject("roUrlTransfer")  'component used to transfer data to/from remote servers
-    url.SetUrl("https://devtools.web.roku.com/samples/sample_content.rss")
+    url.SetUrl("https://dev.marvnationtv.com/tv-feed/roku-feed-v1.xml")
     url.SetCertificatesFile("common:/certs/ca-bundle.crt")
     rsp = url.GetToString()  'convert response into a string
 
@@ -32,7 +32,7 @@ Function GetContentFeed()  'This function retrieves and parses the feed and stor
                     if xmlItem.getName() = "media:content"  'Checks to find <media:content> header
                         item.stream = {url: xmlItem.url}  ' Assigns all content inside <media:content> to the item AA
                         item.url = xmlItem.getAttributes().url
-                        item.streamFormat = "mp4"
+                        item.streamFormat = "hls"
 
                         mediaContent = xmlItem.GetChildElements()
                         for each mediaContentItem in mediaContent  'Looks through meiaContent to find poster image for each piece of content
@@ -96,25 +96,23 @@ Sub loadContent()
     list = [
        'first row in the grid with 3 items across
        {
-           Title:"Row One"
-           ContentList: SelectTo(oneRow, 3)
+           Title:"Live Channels"
+           ContentList: SelectTo(oneRow, 2)
        }
        'second row in the grid with 5 items across
        {
-           Title:"Row Two"
-           ContentList: SelectTo(oneRow, 5, 3)
+           Title:"Fights"
+           ContentList: SelectTo(oneRow, 3, 2)
        }
        'third row in the grid with 5 items across
        {
-           Title:"Row Three"
-           ContentList: SelectTo(oneRow, 5, 8)
+           Title:"Events"
+           ContentList: SelectTo(oneRow, 3, 6)
        }
-       'fourth row in the grid with remaining 2 items
-       {
-           Title:"Row Four"
-           ContentList: SelectTo(oneRow, 5, 13)
-       }
+      
     ]
 
     m.top.content = ParseXMLContent(list)
 End Sub
+
+

@@ -5,6 +5,10 @@
 <component name="MainScene" extends="Scene" >
 
 <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+  <script type="text/brightscript" uri="UILogic/ScreenStackLogic.brs" />
+    <script type="text/brightscript" uri="UILogic/ContentTaskLogic.brs" />
+    <script type="text/brightscript" uri="UILogic/GridScreenLogic.brs" />
+    <script type="text/brightscript" uri="UILogic/VideoPlayerLogic.brs" />
 <script type="text/brightscript" uri="pkg:/source/utils.brs" />
 
     <interface>
@@ -32,12 +36,19 @@
 
         <ContentScreen
           id = "contentScreen"
-          translation = "[0,120]"
+          translation = "[0,0]"
           visible = "false">
         </ContentScreen>
 
-        <!-- Two labels are overhang -->
-        <Label
+        <!-- Two labels are overhang 
+        <Overhang
+            id="overhang"
+            showOptions="false"
+            showClock="false"
+            logoUri="pkg:/images/hd_overhang_logo.png"
+            translation="[0,15]"
+        /> -->
+         <!--<Label
             id = "hint"
             height = "250"
             width = "320"
@@ -59,7 +70,7 @@
             font = "font:LargeBoldSystemFont"
             visible = "false"
             translation = "[50,35]"
-        />
+        />-->
 
         <Group
           id = "landingScreen"

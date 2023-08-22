@@ -8,7 +8,7 @@
 	<field id="urlTransferPoolField" type="int" /> 
 </interface>
 
-<script type="text/brightscript" uri="pkg://components/UriFetcher.brs"/>
+<script type="text/brightscript" uri="pkg:/components/UriFetcher.brs" />
 
 <children/>
 
