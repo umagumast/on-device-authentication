@@ -1,74 +1,56 @@
-Function ParseXML(str As String) As dynamic  'Takes in the content feed as a string
-    if str = invalid return invalid  'if the response is invalid, return invalid
-    xml = CreateObject("roXMLElement")  '
-    if not xml.Parse(str)  return invalid  'if the string cannot be parse, return invalid
-    return xml  'returns parsed XML if not invalid
+Function ParseXML(str As String) As dynamic
+    if str = invalid return invalid
+    xml = CreateObject("roXMLElement")
+    if not xml.Parse(str) return invalid
+    return xml
 End Function
 
-
-Function GetContentFeed()  'This function retrieves and parses the feed and stores the content item in a ContentNode
-    url = CreateObject("roUrlTransfer")  'component used to transfer data to/from remote servers
-    url.SetUrl("https://dev.marvnationtv.com/tv-feed/roku-feed-v1.xml")
+Function GetContentFeed()
+    url = CreateObject("roUrlTransfer")
+    url.SetUrl("https://dev.marvnationtv.com/tv-feed/roku-feed-v2.xml")
     url.SetCertificatesFile("common:/certs/ca-bundle.crt")
-    rsp = url.GetToString()  'convert response into a string
-
-    responseXML = ParseXML(rsp)  'Roku includes its own XML parsing method
-
-    if responseXML <> invalid then 'Fall back in case Roku's built in XML parse method fails
-        responseXML = responseXML.GetChildElements()  'Access content inside Feed
+    rsp = url.GetToString()
+    responseXML = ParseXML(rsp)
+    if responseXML <> invalid then
+        responseXML = responseXML.GetChildElements()
         responseArray = responseXML.GetChildElements()
     End if
-
-    'manually parse feed if ParseXML() is invalid
-    result = []  'Store all results inside an array. Each element respresents a row inside our RowList stored as an Associative Array (line 63)
-
-    for each xmlItem in responseArray  'For loop to grab contents inside each item in XML feed
-        if xmlItem.getName() = "item"  'Each individual channel content is stored inside the XML header named <item>
-            itemAA = xmlItem.getChildElements()  'Get the child elements of item
-            if itemAA <> invalid  'Fall bak in case invalid is returned
-                item = {}  'Creates an associative array for each row
-                for each xmlItem in itemAA  ' Goes thru all contents of itemAA
+    result = []
+    for each xmlItem in responseArray
+        if xmlItem.getName() = "item"
+            itemAA = xmlItem.getChildElements()
+            if itemAA <> invalid
+                item = {}
+                for each xmlItem in itemAA
                     item[xmlItem.getName()] = xmlItem.getText()
-                    if xmlItem.getName() = "media:content"  'Checks to find <media:content> header
-                        item.stream = {url: xmlItem.url}  ' Assigns all content inside <media:content> to the item AA
+                    if xmlItem.getName() = "media:content"
+                        item.stream = {url: xmlItem.url}
                         item.url = xmlItem.getAttributes().url
                         item.streamFormat = "hls"
-
                         mediaContent = xmlItem.GetChildElements()
-                        for each mediaContentItem in mediaContent  'Looks through meiaContent to find poster image for each piece of content
+                        for each mediaContentItem in mediaContent
                             if mediaContentItem.getName() = "media:thumbnail"
-                                item.HDPosterURL = mediaContentItem.getattributes().url  'Assign image to item AA
+                                item.HDPosterURL = mediaContentItem.getattributes().url
                                 item.HDBackgroundImageUrl = mediaContentItem.getattributes().url
                             end if
                         end for
-                        ''? "contentId= "; xmlItem.getText()
-
                     end if
                 end for
-                result.push(item)  'Pushes each AA into the Array
-                'STOP
+                result.push(item)
             end if
         end if
     end for
-    return result  'Returns the array
+    return result
 End Function
 
-
-Function ParseXMLContent(list As Object)  'Formats content into content nodes so they can be passed into the RowList
+Function ParseXMLContent(list As Object)
     RowItems = createObject("RoSGNode","ContentNode")
-    'Content node format for RowList: ContentNode(RowList content) --<Children>-> ContentNodes for each row --<Children>-> ContentNodes for each item in the row)
     for each rowAA in list
         row = createObject("RoSGNode","ContentNode")
         row.Title = rowAA.Title
-
         for each itemAA in rowAA.ContentList
             item = createObject("RoSGNode","ContentNode")
-            'Don't do item.SetFields(itemAA), as it doesn't cast streamFormat to proper value
-            'for each key in itemAA
-		' ?"key = ", key, itemAA[key]
-                'item[key] = itemAA[key]
-	    'end for
-	    item.setFields(itemAA)
+            item.setFields(itemAA)
             row.appendChild(item)
         end for
         RowItems.appendChild(row)
@@ -80,7 +62,26 @@ Sub Init()
     m.top.functionName = "loadContent"
 End Sub
 
-Function SelectTo(array as Object, num=25 as Integer, start=0 as Integer) as Object  'This method copies an array up to the defined number 'num' (default 25)
+Sub loadContent()
+    oneRow = GetContentFeed()
+    list = [
+       {
+           Title:"Live Channels"
+           ContentList: SelectTo(oneRow, 2)
+       },
+       {
+           Title:"Fights"
+           ContentList: SelectTo(oneRow, 3, 2)
+       },
+       {
+           Title:"Events"
+           ContentList: SelectTo(oneRow, 3, 6)
+       }
+    ]
+    m.top.content = ParseXMLContent(list)
+End Sub
+
+Function SelectTo(array as Object, num=25 as Integer, start=0 as Integer) as Object
     result = []
     for i = start to array.count()-1
         result.push(array[i])
@@ -90,29 +91,3 @@ Function SelectTo(array as Object, num=25 as Integer, start=0 as Integer) as Obj
     end for
     return result
 End Function
-
-Sub loadContent()
-    oneRow = GetContentFeed()
-    list = [
-       'first row in the grid with 3 items across
-       {
-           Title:"Live Channels"
-           ContentList: SelectTo(oneRow, 2)
-       }
-       'second row in the grid with 5 items across
-       {
-           Title:"Fights"
-           ContentList: SelectTo(oneRow, 3, 2)
-       }
-       'third row in the grid with 5 items across
-       {
-           Title:"Events"
-           ContentList: SelectTo(oneRow, 3, 6)
-       }
-      
-    ]
-
-    m.top.content = ParseXMLContent(list)
-End Sub
-
-
